@@ -12,6 +12,84 @@ datasource db {
   provider = "postgresql"
 }
 model User {
-  id   Int    @id @default(autoincrement())
-  name String
+  id       Int          @id @default(autoincrement())
+  username String       @unique
+  password String
+  name     String
+  tasks    Task[]
+  members  TeamMember[]
 }
+
+model Task {
+  id          Int     @id @default(autoincrement())
+  title       String
+  deadline    String
+  priority    String
+  category    String
+  duration    Int?
+  completed   Boolean @default(false)
+  description String?
+  userId      Int?
+  user        User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Team {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String
+  members     TeamMember[]
+  tasks       TeamTask[]
+  sharedFiles SharedFile[]
+  sharedNotes SharedNote[]
+}
+
+model TeamMember {
+  id          Int     @id @default(autoincrement())
+  teamId      Int
+  team        Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId      Int?
+  user        User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  role        String
+  avatarColor String
+  activeTask  String
+  status      String  // "active" | "away" | "completed"
+}
+
+model TeamTask {
+  id          Int     @id @default(autoincrement())
+  teamId      Int
+  team        Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  title       String
+  assignedTo  String
+  progress    Int     @default(0)
+  description String
+  recurrence  String  // "none" | "daily" | "biweekly" | "weekly-days" | "yearly"
+  recurrenceDays String? // serialized JSON array
+  attachments String? // serialized JSON array
+  links       String? // serialized JSON array
+}
+
+model SharedFile {
+  id             Int      @id @default(autoincrement())
+  teamId         Int
+  team           Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  name           String
+  size           String
+  type           String
+  uploadedBy     String
+  associatedTask String
+  uploadedAt     String
+  previewUrl     String?
+}
+
+model SharedNote {
+  id        Int      @id @default(autoincrement())
+  teamId    Int
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  title     String
+  content   String
+  author    String
+  timestamp String
+}
+
