@@ -348,7 +348,11 @@ export default function Dashboard({
                     <button
                       onClick={() => onDeleteTask(task.id)}
                       title="タスクを削除"
-                      className="p-1 text-slate-400 hover:text-rose-500 hover:bg-slate-50 rounded-lg transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
+                      className={`p-1 text-slate-400 hover:text-rose-500 hover:bg-slate-50 rounded-lg transition-all cursor-pointer ${
+                        task.completed 
+                          ? "opacity-85" 
+                          : "opacity-0 group-hover:opacity-100"
+                      }`}
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
